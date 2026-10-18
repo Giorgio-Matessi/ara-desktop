@@ -1,0 +1,60 @@
+name: Bug
+description: Something the overlay does that it shouldn't, or doesn't do that it should.
+labels: ["bug"]
+body:
+  - type: input
+    id: build
+    attributes:
+      label: Build
+      description: The version in the tray tooltip, or the tag you were given.
+      placeholder: v0.0.5-alpha
+    validations:
+      required: true
+
+  - type: input
+    id: session
+    attributes:
+      label: Track and car
+      description: And whether it was wet or dry. "Not in a session" is a fine answer.
+      placeholder: Summit Point, Global Mazda MX-5 Cup, dry
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected, and what happened instead
+      placeholder: |
+        Expected the banner to appear for a clean 1:31.4.
+        Nothing happened — no banner, no change to the held medal.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to get back to it
+      description: Rough steps are fine. "Happened once, can't reproduce" is worth knowing too.
+
+  - type: textarea
+    id: log
+    attributes:
+      label: errors.log
+      description: >
+        From %APPDATA%\AraOverlay — attach the file or paste the last few lines. This is usually
+        what identifies the cause, so it's worth checking even when nothing looked wrong.
+      render: text
+
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: >
+        A screenshot of the panel if there was anything visible. challenges.cache.json if this is
+        about wrong targets or a missing challenge.
+
+  - type: markdown
+    attributes:
+      value: >
+        **Don't attach `session.dat`.** That's your sign-in. It's encrypted to your Windows
+        account and useless to anyone else, but there's no reason to share it.

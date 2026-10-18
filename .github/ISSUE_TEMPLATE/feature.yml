@@ -1,0 +1,33 @@
+name: Feature
+description: Something the overlay should do that it doesn't.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What's awkward today, from a driver's side of the screen. Not the solution yet.
+      placeholder: >
+        Reinstalling loses every medal, so the panel claims you've earned nothing at tracks you
+        got gold at months ago.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: What you'd like instead
+    validations:
+      required: true
+
+  - type: textarea
+    id: done
+    attributes:
+      label: Done when
+      description: How we'd know it works. One or two things that would have to be true.
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Anything already considered
+      description: Approaches you've ruled out, and why. Saves rediscovering them.
