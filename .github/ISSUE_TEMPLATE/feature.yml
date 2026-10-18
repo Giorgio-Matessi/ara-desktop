@@ -1,15 +1,15 @@
 name: Feature
-description: Something the overlay should do that it doesn't.
+description: Something ARA Desktop should do that it doesn't.
 labels: ["enhancement"]
 body:
   - type: textarea
     id: problem
     attributes:
       label: The problem
-      description: What's awkward today, from a driver's side of the screen. Not the solution yet.
+      description: What's awkward today, from the user's side of the screen. Not the solution yet.
       placeholder: >
-        Reinstalling loses every medal, so the panel claims you've earned nothing at tracks you
-        got gold at months ago.
+        The window always opens at the default size, so I resize and move it every time I
+        start the app.
     validations:
       required: true
 

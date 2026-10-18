@@ -1,22 +1,22 @@
 name: Bug
-description: Something the overlay does that it shouldn't, or doesn't do that it should.
+description: Something ARA Desktop does that it shouldn't, or doesn't do that it should.
 labels: ["bug"]
 body:
   - type: input
     id: build
     attributes:
       label: Build
-      description: The version in the tray tooltip, or the tag you were given.
-      placeholder: v0.0.5-alpha
+      description: The version you're running, from the installer name or the tag you were given.
+      placeholder: v0.1.0
     validations:
       required: true
 
   - type: input
-    id: session
+    id: system
     attributes:
-      label: Track and car
-      description: And whether it was wet or dry. "Not in a session" is a fine answer.
-      placeholder: Summit Point, Global Mazda MX-5 Cup, dry
+      label: System
+      description: Windows version, and anything unusual about the setup (multiple monitors, scaling, VM).
+      placeholder: Windows 11 24H2, two monitors at 150% scaling
     validations:
       required: true
 
@@ -25,8 +25,8 @@ body:
     attributes:
       label: What you expected, and what happened instead
       placeholder: |
-        Expected the banner to appear for a clean 1:31.4.
-        Nothing happened — no banner, no change to the held medal.
+        Expected the window to reopen where I left it.
+        It opened on the primary monitor at the default size.
     validations:
       required: true
 
@@ -39,22 +39,20 @@ body:
   - type: textarea
     id: log
     attributes:
-      label: errors.log
+      label: Logs or error output
       description: >
-        From %APPDATA%\AraOverlay — attach the file or paste the last few lines. This is usually
-        what identifies the cause, so it's worth checking even when nothing looked wrong.
+        Any error message the app showed, or output from the terminal if you ran it from one.
+        Paste the last few lines; this is usually what identifies the cause.
       render: text
 
   - type: textarea
     id: extra
     attributes:
       label: Anything else
-      description: >
-        A screenshot of the panel if there was anything visible. challenges.cache.json if this is
-        about wrong targets or a missing challenge.
+      description: A screenshot if there was anything visible.
 
   - type: markdown
     attributes:
       value: >
-        **Don't attach `session.dat`.** That's your sign-in. It's encrypted to your Windows
-        account and useless to anyone else, but there's no reason to share it.
+        **Don't paste passwords, tokens or other secrets.** Check logs and screenshots before
+        attaching them.
