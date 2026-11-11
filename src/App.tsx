@@ -17,7 +17,21 @@ type Challenge = {
 
 type Catalog = { challenges: Challenge[]; skipped: number };
 type OverlayStatus = { supported: boolean; installed: boolean };
-type OverlaySettings = { left: number; top: number; locked: boolean };
+type OverlaySettings = {
+  left: number;
+  top: number;
+  locked: boolean;
+  startMinimized: boolean;
+  iracingOnly: boolean;
+  startWithWindows: boolean;
+};
+
+const OPTIONS = [
+  ["locked", "Lock position (mouse clicks pass through to iRacing)"],
+  ["iracingOnly", "Show with iRacing only (hides the ARA mark while the sim is closed)"],
+  ["startMinimized", "Start minimized (bring it back from the tray with Show overlay)"],
+  ["startWithWindows", "Start with Windows"],
+] as const;
 
 type View =
   | { kind: "loading" }
@@ -264,14 +278,16 @@ function App() {
                 {settings && (
                   <section className="section">
                     <h2>Settings</h2>
-                    <label className="field">
-                      <input
-                        type="checkbox"
-                        checked={settings.locked}
-                        onChange={(e) => setSettings({ ...settings, locked: e.currentTarget.checked })}
-                      />
-                      Lock position (mouse clicks pass through to iRacing)
-                    </label>
+                    {OPTIONS.map(([k, text]) => (
+                      <label key={k} className="field">
+                        <input
+                          type="checkbox"
+                          checked={settings[k]}
+                          onChange={(e) => setSettings({ ...settings, [k]: e.currentTarget.checked })}
+                        />
+                        {text}
+                      </label>
+                    ))}
                     {(["left", "top"] as const).map((k) => (
                       <label key={k} className="field">
                         <span className="label">{k === "left" ? "Distance from left edge" : "Distance from top edge"}</span>
@@ -289,8 +305,8 @@ function App() {
                       Save settings
                     </button>
                     <p className="status">
-                      The overlay reads these when it starts, so restart it to apply them. Ctrl+Alt+L toggles the lock while
-                      it's running.
+                      The overlay reads these when it starts, so restart it to apply them; Start with Windows applies on save.
+                      Ctrl+Alt+L toggles the lock while it's running.
                     </p>
                   </section>
                 )}
