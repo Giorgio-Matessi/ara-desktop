@@ -62,6 +62,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-opener",
  "tokio",
+ "winreg",
 ]
 
 [[package]]

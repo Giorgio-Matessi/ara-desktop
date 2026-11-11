@@ -19,12 +19,58 @@ pub struct Status {
     installed: bool,
 }
 
-/// The overlay's own settings.json fields, which it writes in PascalCase and reads case-sensitively.
+/// The overlay's own settings.json fields, which it writes in PascalCase and reads case-sensitively,
+/// plus Start with Windows, which lives in the registry.
 #[derive(Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Settings {
     left: f64,
     top: f64,
     locked: bool,
+    start_minimized: bool,
+    iracing_only: bool,
+    start_with_windows: bool,
+}
+
+/// The overlay's own Run value; it ticks Start with Windows in its tray when this exists.
+#[cfg(windows)]
+const RUN_KEY: &str = r"Software\Microsoft\Windows\CurrentVersion\Run";
+#[cfg(windows)]
+const RUN_VALUE: &str = "ARA Challenge Overlay";
+
+#[cfg(windows)]
+fn autostart() -> bool {
+    use winreg::{RegKey, enums::HKEY_CURRENT_USER};
+    RegKey::predef(HKEY_CURRENT_USER)
+        .open_subkey(RUN_KEY)
+        .and_then(|k| k.get_raw_value(RUN_VALUE))
+        .is_ok()
+}
+
+#[cfg(windows)]
+fn set_autostart(app: &AppHandle, on: bool) -> Result<(), String> {
+    use winreg::{RegKey, enums::HKEY_CURRENT_USER};
+    let failed = |_| "Start with Windows could not be changed.".to_string();
+    let (key, _) = RegKey::predef(HKEY_CURRENT_USER).create_subkey(RUN_KEY).map_err(failed)?;
+    if on {
+        // Same quoted path the overlay writes, so its tray tick stays in step.
+        key.set_value(RUN_VALUE, &format!("\"{}\"", exe(app)?.display())).map_err(failed)
+    } else {
+        match key.delete_value(RUN_VALUE) {
+            Err(e) if e.kind() != std::io::ErrorKind::NotFound => Err(failed(e)),
+            _ => Ok(()),
+        }
+    }
+}
+
+#[cfg(not(windows))]
+fn autostart() -> bool {
+    false
+}
+
+#[cfg(not(windows))]
+fn set_autostart(_: &AppHandle, _: bool) -> Result<(), String> {
+    Ok(())
 }
 
 fn exe(app: &AppHandle) -> Result<PathBuf, String> {
@@ -89,6 +135,9 @@ pub fn overlay_settings(app: AppHandle) -> Result<Settings, String> {
         left: doc["Left"].as_f64().unwrap_or(40.0),
         top: doc["Top"].as_f64().unwrap_or(40.0),
         locked: doc["Locked"].as_bool().unwrap_or(true),
+        start_minimized: doc["StartMinimized"].as_bool().unwrap_or(false),
+        iracing_only: doc["IRacingOnly"].as_bool().unwrap_or(false),
+        start_with_windows: autostart(),
     })
 }
 
@@ -100,6 +149,9 @@ pub fn save_overlay_settings(app: AppHandle, settings: Settings) -> Result<(), S
     doc["Left"] = settings.left.into();
     doc["Top"] = settings.top.into();
     doc["Locked"] = settings.locked.into();
+    doc["StartMinimized"] = settings.start_minimized.into();
+    doc["IRacingOnly"] = settings.iracing_only.into();
     std::fs::create_dir_all(path.parent().unwrap()).map_err(|e| e.to_string())?;
-    std::fs::write(&path, serde_json::to_string_pretty(&doc).unwrap()).map_err(|e| e.to_string())
+    std::fs::write(&path, serde_json::to_string_pretty(&doc).unwrap()).map_err(|e| e.to_string())?;
+    set_autostart(&app, settings.start_with_windows)
 }
